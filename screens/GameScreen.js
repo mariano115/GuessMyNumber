@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import Title from "../components/ui/Title";
@@ -24,12 +24,18 @@ let maxBoundary = 100;
 export default function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRounds, setGuessRounds] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === userNumber) {
       onGameOver();
     }
   }, [currentGuess, userNumber, onGameOver]);
+
+  useEffect(() => {
+    minBoundary = 1;
+    maxBoundary = 100;
+  }, []);
 
   const nextGuessHandler = (direction) => {
     if (
@@ -52,13 +58,13 @@ export default function GameScreen({ userNumber, onGameOver }) {
       currentGuess
     );
     setCurrentGuess(newRndNumber);
+    setGuessRounds((prevGuessRounds) => [...prevGuessRounds, newRndNumber]);
   };
 
   return (
     <View style={styles.screen}>
       <Title>Opponent's Guess</Title>
       <NumberContainer>{currentGuess}</NumberContainer>
-      {/*Guess*/}
       <Card>
         <InstructionText style={styles.instructionText}>
           Higher or lower?
@@ -76,7 +82,11 @@ export default function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
-      <View>{/*LOG ROUNDS*/}</View>
+      <View>
+        {guessRounds.map((guessRound) => (
+          <Text key={guessRound}>{guessRound}</Text>
+        ))}
+      </View>
     </View>
   );
 }
